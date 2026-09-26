@@ -1,11 +1,11 @@
 package com.soukra.api.service;
 
+import com.soukra.api.exception.ResourceNotFoundException;
 import com.soukra.api.model.Product;
 import com.soukra.api.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -20,8 +20,9 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produit introuvable avec l'ID : " + id));
     }
 
     public List<Product> getProductsByCategory(Long categoryId) {
@@ -33,6 +34,7 @@ public class ProductService {
     }
 
     public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+        Product product = getProductById(id);
+        productRepository.delete(product);
     }
 }

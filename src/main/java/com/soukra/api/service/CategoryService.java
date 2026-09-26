@@ -1,11 +1,11 @@
 package com.soukra.api.service;
 
+import com.soukra.api.exception.ResourceNotFoundException;
 import com.soukra.api.model.Category;
 import com.soukra.api.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CategoryService {
@@ -20,8 +20,9 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Optional<Category> getCategoryById(Long id) {
-        return categoryRepository.findById(id);
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Catégorie introuvable avec l'ID : " + id));
     }
 
     public Category createCategory(Category category) {
@@ -29,6 +30,7 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+        Category category = getCategoryById(id);
+        categoryRepository.delete(category);
     }
 }
